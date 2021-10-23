@@ -67,6 +67,24 @@ app.get('/about', function(req, res){
      });
 });
 
+app.get('/tours/hood-river', function(req, res){
+    res.render('tours/hood-river');
+});
+app.get('/tours/request-group-rate', function(req, res){
+    res.render('tours/request-group-rate');
+});
+app.get('/signup', function(req, res){
+    res.render('tours/signup');
+});
+
+app.get('/headers', function(req,res){
+    res.set('Content-type','text/plain');
+    var s='';
+    for(var name in req.headers) s+= name + ': ' + req.headers[name] + '\n';
+    res.send(s);
+    //console.log(req.headers);
+});
+
 // 404 catch-all handler (middleware)
 app.use(function(req, res, next){
     res.status(404);
