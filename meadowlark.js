@@ -85,6 +85,17 @@ app.get('/headers', function(req,res){
     //console.log(req.headers);
 });
 
+app.get('/greeting', function(req, res){    
+    console.log(req);
+    res.render('about', {
+        message: 'welcome',
+        style: req.query.foo,
+        layout: null
+        //userid: req.cookie.userid,
+        //username: req.session.username,
+    });
+});
+
 // 404 catch-all handler (middleware)
 app.use(function(req, res, next){
     res.status(404);
