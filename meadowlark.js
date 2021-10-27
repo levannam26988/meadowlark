@@ -4,7 +4,10 @@ var bodyParser = require('body-parser');
 
 var app = express();
 
-
+var tours = [
+    { id: 0, name: 'Hood River', price: 99.99 },
+    { id: 1, name: 'Oregon Coast', price: 149.95 },
+];
 
 // set up handlebars view engine
 var handlebars = require('express3-handlebars')
@@ -102,6 +105,10 @@ app.get('/test', function(req, res){
 
 app.get('/thank-you', function(req, res) {
     res.render('thank-you');
+});
+
+app.get('/api/tours', function(req, res) {
+    res.json(tours);
 });
 
 app.post('/post', function(req, res) {
