@@ -108,7 +108,34 @@ app.get('/thank-you', function(req, res) {
 });
 
 app.get('/api/tours', function(req, res) {
-    res.json(tours);
+    //res.json(tours);
+    var toursXml = '<?xml version="1.0"?><tours>' +
+        tours.map(function(p) {
+            return '<tour price="' + p.price +
+                '" id="' + p.id + '">' + p.name + '</tour>';
+        }).join('') + '</tours>';
+    var toursText = tours.map(function(p) {
+        return p.id + ': ' + p.name + ' (' + p.price + ')';
+    }).join('\n');
+    //console.log(toursXml);
+    //console.log(toursText);
+    res.format({
+        'application/json': function() {
+            res.json(tours);
+        },
+        'application/xml': function() {
+            res.type('application/xml');
+            res.send(toursXml);
+        },
+        'text/xml': function(){
+            res.type('text/xml');
+            res.send(tousXml);
+        },
+        'text/plain': function(){
+            res.type('text/plain');
+            res.send(toursText);
+        }
+    });
 });
 
 app.post('/post', function(req, res) {
@@ -118,6 +145,11 @@ app.post('/post', function(req, res) {
     res.send('POST request to homepage');
 });
 
+app.put('/api/tour/:id', function(req, res) {
+    var p = tours.some(function(p) {
+        return p.id == 
+    })
+})
 // 500 error handler (middleware)
 app.use(function(err, req, res, next){
     console.error(err.stack);
