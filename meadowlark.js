@@ -146,10 +146,21 @@ app.post('/post', function(req, res) {
 });
 
 app.put('/api/tour/:id', function(req, res) {
+    /*
     var p = tours.some(function(p) {
-        return p.id == 
-    })
-})
+        return p.id == req.params.id
+    });
+    if (p) {
+        if(req.query.name) p.name = req.query.name;
+        if(req.query.price) p.price = req.query.price;
+        res.json({success: true});
+    } else {
+        res.json({error: 'No such tour exists.'});
+    }
+    */
+   res.send('PUT request to hompage.');
+});
+
 // 500 error handler (middleware)
 app.use(function(err, req, res, next){
     console.error(err.stack);
