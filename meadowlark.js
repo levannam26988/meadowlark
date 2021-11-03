@@ -161,6 +161,18 @@ app.put('/api/tour/:id', function(req, res) {
    res.send('PUT request to hompage.');
 });
 
+app.get('/api/tour/:id', function(req, res){
+    var i;
+    for( var i=tours.length-1; i>=0; i--)
+        if( tours[i].id == req.params.id ) break;
+    if( i>=0 ) {
+        tours.splice(i, 1);
+        res.json({success: true});
+    } else {
+        res.json({error: 'No such tour exists.'});
+    }
+});
+
 // 500 error handler (middleware)
 app.use(function(err, req, res, next){
     console.error(err.stack);
@@ -169,6 +181,7 @@ app.use(function(err, req, res, next){
 });
 // 404 catch-all handler (middleware)
 app.use(function(req, res, next){
+    console.log(req);
     res.status(404);
     res.render('404');
 });
