@@ -181,7 +181,7 @@ app.use(function(err, req, res, next){
 });
 // 404 catch-all handler (middleware)
 app.use(function(req, res, next){
-    console.log(req);
+    //console.log(req);
     res.status(404);
     res.render('404');
 });
