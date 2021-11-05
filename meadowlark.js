@@ -1,6 +1,7 @@
 var express = require('express');
 var fortune = require('./lib/fortune.js');
 var bodyParser = require('body-parser');
+const os = require('os');
 
 var app = express();
 
@@ -19,6 +20,8 @@ app.set('port', process.env.PORT || 3000);
 
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
+console.log(os.userInfo());
+console.log(os.type());
 /*
 app.use(function (req, res) {
     res.setHeader('content-Type', 'text/plain');
@@ -55,9 +58,26 @@ app.use(function(req, res, next){
 });
 
 app.get('/', function(req, res){
-    res.render('home');
+    var obj = {name: 'Users'};
+    res.render('home', obj);
     //console.log(req.body);
 });
+
+app.get('/product', (req, res)=>{
+    var product = {
+        currency: {
+            name: 'United States dollars',
+            abbrev: 'USD'
+        },
+        tours: [
+            {name: 'Hood River', price: '$99.95'},
+            {name: 'Oregon Coast', price: '$159.5'},
+        ],
+        specialsUrl: '/january-specials',
+        currencies: ['USD', 'GBP', 'BTC'],        
+    };
+    res.render('product', product);
+})
 app.get('/about', function(req, res){
     //var randomFortune = 
     //    fortunes[Math.floor(Math.random() * fortunes.length)];
