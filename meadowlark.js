@@ -20,36 +20,43 @@ app.set('port', process.env.PORT || 3000);
 
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
-console.log(os.userInfo());
-console.log(os.type());
-/*
-app.use(function (req, res) {
-    res.setHeader('content-Type', 'text/plain');
-    res.write('you posted:\n');
-    res.end(JSON.stringify(req.body, null, 2));
+// console.log(os.userInfo());
+//console.log(os.type());
+
+function getWeatherData(){
+    return {
+        locations: [
+            {
+                name: 'Portland',
+                forecastUrl: 'http://www.wunderground.com/US/OR/Portland.html',
+                iconUrl: 'http://icons-ak.wxug.com/i/c/k/cloudy.gif',
+                weather: 'Overcast',
+                temp: '54.1 F (12.3 C)',
+            },
+            {
+                name: 'Bend',
+                forecastUrl: 'http://www.wunderground.com/US/OR/Bend.html',
+                iconUrl: 'http://icons-ak.wxug.com/i/c/k/partlycloudy.gif',
+                weather: 'Partly Cloudy',
+                temp: '55.0 F (12.8 C)',
+            },
+            {
+                name: 'Manzanita',
+                forecastUrl: 'http://wwww.wunderground.com/US/OR/Manzanita.html',
+                iconUrl: 'http://icons-ak.wxug.com/i/c/k/rain.gif',
+                weather: 'Light Rain',
+                temp: '55.0 F (12.8 C)',
+            },
+        ]
+    };
+};
+
+app.use(function(req, res, next){
+    if(!res.locals.partials) res.locals.partials = {};
+    res.locals.partials.weather = getWeatherData();
+    next();
 });
 
-app.get('/about', function(req, res){
-    res.type('text/plain');
-    res.send('About Meadowlark Travel');
-});
-
-// custom 404 page
-app.use(function(req, res){
-    res.type('text/plain');
-    res.status(404);
-    res.send('404 - Not Found');
-});
-
-// custom 500 page
-app.use(function(err, req, res, next){
-    console.error(err.stack);
-    res.type('text/plain');
-    res.status(500);
-    res.send('500 - Server Error');
-});
-
-*/
 app.use(express.static(__dirname + '/public'));
 
 app.use(function(req, res, next){
@@ -58,7 +65,7 @@ app.use(function(req, res, next){
 });
 
 app.get('/', function(req, res){
-    var obj = {name: 'Users'};
+    var obj = {name: os.userInfo().username.toUpperCase()};
     res.render('home', obj);
     //console.log(req.body);
 });
@@ -74,7 +81,8 @@ app.get('/product', (req, res)=>{
             {name: 'Oregon Coast', price: '$159.5'},
         ],
         specialsUrl: '/january-specials',
-        currencies: ['USD', 'GBP', 'BTC'],        
+        //currencies: ['USD', 'GBP', 'BTC'],
+        currencies: ['VND', 'JPY', 'EUR'],        
     };
     res.render('product', product);
 })
