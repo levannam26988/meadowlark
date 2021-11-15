@@ -12,7 +12,17 @@ var tours = [
 
 // set up handlebars view engine
 var handlebars = require('express3-handlebars')
-    .create({defaultLayout:'main'});
+    .create({
+        defaultLayout:'main',
+        helpers: {
+            section: function(name, options){
+                if(!this._sections) this._sections = {};
+                this._sections[name] = options.fn(this);
+                return null;
+            }
+        }
+    });
+
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
@@ -65,7 +75,11 @@ app.use(function(req, res, next){
 });
 
 app.get('/', function(req, res){
-    var obj = {name: os.userInfo().username.toUpperCase()};
+    let uptime = os.uptime();
+    let hours = (uptime - (uptime % 3600)) / 3600;
+    let minutes = ((uptime -hours* 3600) - (uptime - hours * 3600) % 60) / 60;
+    let seconds = uptime - hours * 3600 - minutes * 60;
+    var obj = {hours: hours, minutes: minutes, seconds: seconds};    
     res.render('home', obj);
     //console.log(req.body);
 });
@@ -163,6 +177,23 @@ app.get('/api/tours', function(req, res) {
             res.type('text/plain');
             res.send(toursText);
         }
+    });
+});
+
+app.get('/jquery-test', function(req, res){
+    res.render('jquery-test');
+});
+
+app.get('/nursery-rhyme', function(req, res){
+    res.render('nursery-rhyme');
+});
+
+app.get('/data/nursery-rhyme', function(req, res){
+    res.json({
+        animal: 'squirrel',
+        bodyPart: 'tail',
+        adjective: 'bushy',
+        noun: 'heck',
     });
 });
 
