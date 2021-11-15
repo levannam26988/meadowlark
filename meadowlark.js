@@ -101,9 +101,7 @@ app.get('/product', (req, res)=>{
     res.render('product', product);
 })
 app.get('/about', function(req, res){
-    //var randomFortune = 
-    //    fortunes[Math.floor(Math.random() * fortunes.length)];
-    //console.log(randomFortune);
+    
     res.render('about', { 
         fortune: fortune.getFortune(),
         pageTestScript: '/qa/tests-about.js'
