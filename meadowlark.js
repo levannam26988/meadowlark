@@ -195,6 +195,23 @@ app.get('/data/nursery-rhyme', function(req, res){
     });
 });
 
+app.get('/newsletter', function(req, res){
+    res.render('newsletter', {csrf: 'CSRF token goes here'});
+});
+
+app.post('/process', function(req, res){
+    if(req.xhr || req.accepts('json,html')==='json'){
+        //console.log(req);
+        res.send({ success: true});
+    } else {
+        console.log('Form (from querystring): ' + req.query.form);
+        console.log('CSRF token (from hiden form field): ' + req.body._csrf);
+        console.log('Name (from visible form field): ' + req.body.name);
+        console.log('Email (from visible form field): ' + req.body.email);
+        res.redirect(303, '/thank-you');
+    }    
+});
+
 app.post('/post', function(req, res) {
     console.log('Received contact from ' + req.body.name + 
         ' <' + req.body.email + '>');
