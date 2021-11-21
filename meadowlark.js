@@ -2,6 +2,8 @@ var express = require('express');
 var fortune = require('./lib/fortune.js');
 var bodyParser = require('body-parser');
 const os = require('os');
+var formidable = require('formidable');
+var fs = require('fs');
 
 var app = express();
 
@@ -72,6 +74,31 @@ app.use(express.static(__dirname + '/public'));
 app.use(function(req, res, next){
     res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
     next();
+});
+
+app.get('/contest/vacation-photo',function(req,res){
+    var now = new Date();
+    res.render('contest/vacation-photo',{
+        year: now.getFullYear(),month: now.getMonth()
+    });
+});
+app.post('/contest/vacation-photo/:year/:month', function(req, res){
+    var form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files){
+        if(err) return res.redirect(303, '/error');
+        //console.log('received fields:');
+        //console.log(fields);
+        // console.log('received files:');
+        // console.log(files);
+        // res.redirect(303, '/thank-you');
+        var oldpath = files.photo.filepath;
+        var newpath = __dirname + '/uploads/' + files.photo.originalFilename;
+        fs.rename(oldpath, newpath, (err)=>{
+            if(err) throw err;
+            //res.redirect(303, '/thank-you');            
+        });
+        res.json({fields, files});
+    });
 });
 
 app.get('/', function(req, res){
