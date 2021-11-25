@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 const os = require('os');
 var formidable = require('formidable');
 var fs = require('fs');
+var upload = require('jquery-file-upload-middleware');
 
 var app = express();
 
@@ -34,6 +35,17 @@ app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
 // console.log(os.userInfo());
 //console.log(os.type());
+upload.configure({
+    uploadDir: __dirname + '/public/uploads',
+    uploadUrl: '/uploads',
+    imageVersions: {
+        thumbnail: {
+            width: 80,
+            height: 80
+        }
+    }
+});
+app.use('/upload', upload.fileHandler());
 
 function getWeatherData(){
     return {
@@ -76,10 +88,17 @@ app.use(function(req, res, next){
     next();
 });
 
+app.get('/jquery-file-upload-test', (req, res)=>{
+    res.render('jquery-file-upload-test');
+});
+
 app.get('/contest/vacation-photo',function(req,res){
     var now = new Date();
+    var year, month;
+    year = now.getFullYear();
+    month = now.getMonth() + 1;
     res.render('contest/vacation-photo',{
-        year: now.getFullYear(),month: now.getMonth()
+        year: year,month: month,
     });
 });
 app.post('/contest/vacation-photo/:year/:month', function(req, res){

@@ -1,0 +1,18 @@
+<script src="/vendor/jqfu/js/vendor/jquery.ui.widget.js"></script>
+<script src="/vendor/jqfu/js/jquery.iframe-transport.js"></script>
+<script src="/vendor/jqfu/js/jquery.fileupload.js"></script>
+<input id="fileuploads" type="file" name="file[]" data-url="/upload" multiple>
+<script>
+    $(document).ready(function(){
+            $('#fileuploads').fileupload({
+                dataType: 'json',
+                done: function(e, data){
+                    $each(data.result.files, function(index, file){
+                        $('#fileUploads').append($('<div class="upload">' + 
+                            '<span class="glyphicon glyphicon-ok"></span>' +
+                            '&nbsp;' + file.originalName + '</div>'));
+                    });
+                }
+            });
+        });
+</script>
