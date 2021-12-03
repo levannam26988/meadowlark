@@ -14,6 +14,7 @@ var tours = [
 ];
 
 // set up handlebars view engine
+
 var handlebars = require('express3-handlebars')
     .create({
         defaultLayout:'main',
