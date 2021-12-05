@@ -5,6 +5,7 @@ const os = require('os');
 var formidable = require('formidable');
 var fs = require('fs');
 var upload = require('jquery-file-upload-middleware');
+var credentials = require('./Credentials.js');
 
 var app = express();
 
@@ -34,6 +35,9 @@ app.set('port', process.env.PORT || 3000);
 
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
+app.use(require('cookie-parser')(credentials.cookieSecret));
+app.use(require('express-session')({ resave: true, saveUninitialized: true, secret: 'keyboard cat' }));
+
 // console.log(os.userInfo());
 //console.log(os.type());
 upload.configure({
@@ -89,6 +93,59 @@ app.use(function(req, res, next){
     next();
 });
 
+app.use(function (req, res, next) {
+    // if there's a flash message, tranfer
+    // it to the context, then clear it
+    res.locals.flash = req.session.flash;
+    delete req.session.flash;
+    next();
+});
+
+// for now, we're mocking NewsletterSignup:
+function NewsletterSignup() {
+}
+NewsletterSignup.prototype.save = function (cb) {
+    cb();
+};
+
+var VALID_EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+app.post('/process', function (req, res) {
+    var name = req.body.name || '', email = req.body.email || '';
+    // input validation
+    if (!email.match(VALID_EMAIL_REGEX)) {
+        if (req.xhr) return res.json({ error: 'Invalid name email address.' });
+        req.session.flash = {
+            type: 'danger',
+            intro: 'Validation error!',
+            message: 'The email address you entered was not valid.',
+        };
+        return res.redirect(303, '/newsletter/archive');
+    }
+    new NewsletterSignup({ name: name, email: email }).save(function (err) {
+        if (err) {
+            if (req.xhr) return res.json({ error: 'Database error.' });
+            req.session.flash = {
+                type: 'danger',
+                intro: 'database error',
+                message: 'There was a database error; please try again later.',
+            }
+            return res.redirect(303, '/newsletter/archive');
+        }
+        if (req.xhr) return res.json({ sucess: true });
+        req.session.flash = {
+            type: 'success',
+            intro: 'Thank you!',
+            message: 'You have now been signed up for the newsletter.',
+        };
+        return res.redirect(303, '/newsletter/archive');
+    });
+});
+
+app.get('/newsletter/archive', function (req, res) {
+    res.render('newsletter/archive');
+});
+
 app.get('/jquery-file-upload-test', (req, res)=>{
     res.render('jquery-file-upload-test');
 });
@@ -126,9 +183,10 @@ app.get('/', function(req, res){
     let hours = (uptime - (uptime % 3600)) / 3600;
     let minutes = ((uptime -hours* 3600) - (uptime - hours * 3600) % 60) / 60;
     let seconds = uptime - hours * 3600 - minutes * 60;
-    var obj = {hours: hours, minutes: minutes, seconds: seconds};    
+    var obj = { hours: hours, minutes: minutes, seconds: seconds };
+    res.cookie('monster', 'mom mom', { sameSite: 'none', secure: true, signed: true });
     res.render('home', obj);
-    //console.log(req.body);
+    console.log(req.signedCookies);
 });
 
 app.get('/product', (req, res)=>{
@@ -245,7 +303,7 @@ app.get('/data/nursery-rhyme', function(req, res){
 app.get('/newsletter', function(req, res){
     res.render('newsletter', {csrf: 'CSRF token goes here'});
 });
-
+/*
 app.post('/process', function(req, res){
     if(req.xhr || req.accepts('json,html')==='json'){
         //console.log(req);
@@ -258,7 +316,7 @@ app.post('/process', function(req, res){
         res.redirect(303, '/thank-you');
     }    
 });
-
+*/
 app.post('/post', function(req, res) {
     console.log('Received contact from ' + req.body.name + 
         ' <' + req.body.email + '>');
