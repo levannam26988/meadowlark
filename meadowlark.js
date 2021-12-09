@@ -1,4 +1,4 @@
-var express = require('express');
+﻿var express = require('express');
 var fortune = require('./lib/fortune.js');
 var bodyParser = require('body-parser');
 const os = require('os');
@@ -6,6 +6,27 @@ var formidable = require('formidable');
 var fs = require('fs');
 var upload = require('jquery-file-upload-middleware');
 var credentials = require('./Credentials.js');
+var nodemailer = require('nodemailer');
+const { error } = require('console');
+var transporter = nodemailer.createTransport({
+    host: "Smtp.live.com",
+    secure: false, 
+    port: 587,                     
+    auth: {
+        user: "levannam26988@outlook.com",
+        pass: "ABcd12EF",
+    },
+});
+
+transporter.sendMail({
+    from: '"Fred Foo 👻" <levannam26988@outlook.com>', // sender address
+    to: "levannam26988@gmail.com", // list of receivers
+    subject: "Welcome to Website Development", // Subject line
+    text: "Hello world from Meadowlark Travel.", // plain text body
+    html: "<b>Hello world from Meadowlark Travel.</b>", // html body
+}, function (err) {
+    if (err) console.error('Unable to send email: ' + error);
+});
 
 var app = express();
 
@@ -190,7 +211,7 @@ app.get('/', function(req, res){
     var obj = { hours: hours, minutes: minutes, seconds: seconds };
     res.cookie('monster', 'mom mom', { sameSite: 'none', secure: true, signed: true });
     res.render('home', obj);
-    console.log(req.signedCookies);
+    console.log(req.signedCookies);    
 });
 
 app.get('/product', (req, res)=>{
