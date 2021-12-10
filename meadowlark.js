@@ -9,12 +9,12 @@ var credentials = require('./Credentials.js');
 var nodemailer = require('nodemailer');
 const { error } = require('console');
 var transporter = nodemailer.createTransport({
-    host: "Smtp.live.com",
-    secure: false, 
-    port: 587,                     
+    host: credentials.nodemailer.host,
+    secure: credentials.nodemailer.secure,
+    port: credentials.nodemailer.port,
     auth: {
-        user: "levannam26988@outlook.com",
-        pass: "ABcd12EF",
+        user: credentials.nodemailer.auth.user,
+        pass: credentials.nodemailer.auth.pass,
     },
 });
 
