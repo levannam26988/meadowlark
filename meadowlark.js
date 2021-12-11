@@ -18,21 +18,23 @@ var transporter = nodemailer.createTransport({
     },
 });
 
-transporter.sendMail({
-    from: '"Meadowlark Travel Agent" <levannam26988@outlook.com>', // sender address
-    to: "levannam26988@gmail.com", // list of receivers
-    subject: "Welcome to Website Development", // Subject line
-    html: "<h2>Hello from Meadowlark Travel.</h2>", // html body
-    generateTextFromHtml: true,
-}, function (err, info) {
-    if (err) {
-        console.error('Unable to send email: ' + error);
-    }
-    else {
-        console.log("Email sent: %s", info.messageId);
-        console.log(info.envelope);
-    }
-});
+function sendMail() {
+    transporter.sendMail({
+        from: '"Meadowlark Travel Agent" <levannam26988@outlook.com>', // sender address
+        to: 'levannam26988@gmail.com', // list of receivers
+        subject: 'Welcome to Website Development', // Subject line
+        html: '<h2>Hello from Meadowlark Travel.</h2>' +
+            '<img src="https://via.placeholder.com/150" alt="Meadowlark Travel" width="50" height="50">', // html body
+        generateTextFromHtml: true,
+    }, function (err, info) {
+        if (err) {
+            console.error('Unable to send email: ' + error);
+        }
+        else {
+            console.log("Email sent: %s", info.messageId);
+        }
+    });
+};
 
 var app = express();
 
@@ -237,7 +239,7 @@ app.get('/product', (req, res)=>{
     res.render('product', product);
 })
 app.get('/about', function(req, res){
-    
+    sendMail();
     res.render('about', { 
         fortune: fortune.getFortune(),
         pageTestScript: '/qa/tests-about.js'
