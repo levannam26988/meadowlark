@@ -19,13 +19,19 @@ var transporter = nodemailer.createTransport({
 });
 
 transporter.sendMail({
-    from: '"Fred Foo 👻" <levannam26988@outlook.com>', // sender address
+    from: '"Meadowlark Travel Agent" <levannam26988@outlook.com>', // sender address
     to: "levannam26988@gmail.com", // list of receivers
     subject: "Welcome to Website Development", // Subject line
-    text: "Hello world from Meadowlark Travel.", // plain text body
-    html: "<b>Hello world from Meadowlark Travel.</b>", // html body
-}, function (err) {
-    if (err) console.error('Unable to send email: ' + error);
+    html: "<h2>Hello from Meadowlark Travel.</h2>", // html body
+    generateTextFromHtml: true,
+}, function (err, info) {
+    if (err) {
+        console.error('Unable to send email: ' + error);
+    }
+    else {
+        console.log("Email sent: %s", info.messageId);
+        console.log(info.envelope);
+    }
 });
 
 var app = express();
