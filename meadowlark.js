@@ -409,9 +409,9 @@ app.post('/cart/checkout', function (req, res, next) {
         email: email,
     };
     res.render('email/cart-thank-you',
-        { layout: null, cart: cart }, function (err) {
+        { layout: null, cart: cart }, function (err, html) {
             if (err) console.log('error in email template');
-            sendMail('<h2>Thank you for booking your trip with Meadowlark Travel!</h2>', cart.billing.email, 'cart number: ' + cart.number);
+            sendMail(html, cart.billing.email, 'cart number: ' + cart.number);
         });
     res.render('cart-thank-you', { cart: cart });
 });
