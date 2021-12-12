@@ -18,17 +18,16 @@ var transporter = nodemailer.createTransport({
     },
 });
 
-function sendMail() {
+function sendMail(html, to, subject) {
     transporter.sendMail({
         from: '"Meadowlark Travel Agent" <levannam26988@outlook.com>', // sender address
-        to: 'levannam26988@gmail.com', // list of receivers
-        subject: 'Welcome to Website Development', // Subject line
-        html: '<h2>Hello from Meadowlark Travel.</h2>' +
-            '<img src="https://via.placeholder.com/150" alt="Meadowlark Travel" width="50" height="50">', // html body
+        to: to,
+        subject: subject,
+        html: html,
         generateTextFromHtml: true,
     }, function (err, info) {
         if (err) {
-            console.error('Unable to send email: ' + error);
+            console.error('Unable to send email: ' + err.stack);
         }
         else {
             console.log("Email sent: %s", info.messageId);
@@ -238,8 +237,12 @@ app.get('/product', (req, res)=>{
     };
     res.render('product', product);
 })
-app.get('/about', function(req, res){
-    sendMail();
+app.get('/about', function (req, res) {
+    let html = '<h2>Hello from Meadowlark Travel.</h2>' +
+        '<img src="https://via.placeholder.com/150" alt="Meadowlark Travel" width="50" height="50">'; // html body
+    let to = 'levannam26988@gmail.com'; // list of receivers
+    let subject = fortune.getFortune(); // Subject line
+    sendMail(html, to, subject);
     res.render('about', { 
         fortune: fortune.getFortune(),
         pageTestScript: '/qa/tests-about.js'
@@ -383,6 +386,34 @@ app.get('/api/tour/:id', function(req, res){
     } else {
         res.json({error: 'No such tour exists.'});
     }
+});
+
+app.get('/cart/checkout', function (req, res, next) {
+    req.session.cart = { test: true };
+    var cart = req.session.cart;
+    if (!cart) next();
+    res.render('cart-checkout');
+});
+
+app.post('/cart/checkout', function (req, res, next) {
+    var cart = req.session.cart;
+    if (!cart) next(new Error('Cart does not exist.'));
+    var name = req.body.name || '', email = req.body.email || '';
+    // input validation
+    if (!email.match(VALID_EMAIL_REGEX))
+        return next(new Error('Invalid email address.'));
+    // assign a random cart ID; normally we would use a databaseID here
+    cart.number = Math.random().toString().replace(/^0\.0*/, '');
+    cart.billing = {
+        name: name,
+        email: email,
+    };
+    res.render('email/cart-thank-you',
+        { layout: null, cart: cart }, function (err) {
+            if (err) console.log('error in email template');
+            sendMail('<h2>Thank you for booking your trip with Meadowlark Travel!</h2>', cart.billing.email, 'cart number: ' + cart.number);
+        });
+    res.render('cart-thank-you', { cart: cart });
 });
 
 // 500 error handler (middleware)
