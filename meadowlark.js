@@ -6,35 +6,7 @@ var formidable = require('formidable');
 var fs = require('fs');
 var upload = require('jquery-file-upload-middleware');
 var credentials = require('./Credentials.js');
-var nodemailer = require('nodemailer');
-const { error } = require('console');
 var emailService = require('./lib/email.js')(credentials);
-var transporter = nodemailer.createTransport({
-    host: credentials.nodemailer.host,
-    secure: credentials.nodemailer.secure,
-    port: credentials.nodemailer.port,
-    auth: {
-        user: credentials.nodemailer.auth.user,
-        pass: credentials.nodemailer.auth.pass,
-    },
-});
-
-function sendMail(html, to, subject) {
-    transporter.sendMail({
-        from: '"Meadowlark Travel Agent" <levannam26988@outlook.com>', // sender address
-        to: to,
-        subject: subject,
-        html: html,
-        generateTextFromHtml: true,
-    }, function (err, info) {
-        if (err) {
-            console.error('Unable to send email: ' + err.stack);
-        }
-        else {
-            console.log("Email sent: %s", info);
-        }
-    });
-};
 
 var app = express();
 
@@ -433,6 +405,6 @@ app.use(function(req, res, next){
 });
 
 app.listen(app.get('port'), function(){
-    console.log('Express started on http://localhost:' + 
+    console.log('Express started in ' + app.get('env') + ' mode on http://localhost:' + 
      app.get('port') + '; press Ctrl-C to terminate.');
 });
