@@ -8,6 +8,7 @@ var upload = require('jquery-file-upload-middleware');
 var credentials = require('./Credentials.js');
 var nodemailer = require('nodemailer');
 const { error } = require('console');
+var emailService = require('./lib/email.js')(credentials);
 var transporter = nodemailer.createTransport({
     host: credentials.nodemailer.host,
     secure: credentials.nodemailer.secure,
@@ -30,7 +31,7 @@ function sendMail(html, to, subject) {
             console.error('Unable to send email: ' + err.stack);
         }
         else {
-            console.log("Email sent: %s", info.messageId);
+            console.log("Email sent: %s", info);
         }
     });
 };
@@ -242,7 +243,8 @@ app.get('/about', function (req, res) {
         '<img src="https://via.placeholder.com/150" alt="Meadowlark Travel" width="50" height="50">'; // html body
     let to = 'levannam26988@gmail.com'; // list of receivers
     let subject = fortune.getFortune(); // Subject line
-    sendMail(html, to, subject);
+    //sendMail(html, to, subject);
+    emailService.send(to, subject, html);
     res.render('about', { 
         fortune: fortune.getFortune(),
         pageTestScript: '/qa/tests-about.js'
@@ -411,7 +413,8 @@ app.post('/cart/checkout', function (req, res, next) {
     res.render('email/cart-thank-you',
         { layout: null, cart: cart }, function (err, html) {
             if (err) console.log('error in email template');
-            sendMail(html, cart.billing.email, 'cart number: ' + cart.number);
+            //sendMail(html, cart.billing.email, 'cart number: ' + cart.number);
+            emailService.send(cart.billing.email, 'your reservation: ' + cart.number, html);
         });
     res.render('cart-thank-you', { cart: cart });
 });
