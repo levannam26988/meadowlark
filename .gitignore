@@ -2,3 +2,5 @@ node_modules
 uploads
 .vs
 Credentials.js
+log
+test

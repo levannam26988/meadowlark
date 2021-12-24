@@ -13,10 +13,12 @@
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.6",
     "express": "^4.17.1",
+    "express-logger": "^0.0.3",
     "express-session": "^1.17.2",
     "express3-handlebars": "^0.5.2",
     "formidable": "^2.0.1",
     "jquery-file-upload-middleware": "^0.1.8",
+    "morgan": "^1.10.0",
     "nodemailer": "^6.7.2"
   },
   "devDependencies": {
